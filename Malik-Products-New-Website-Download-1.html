@@ -1,0 +1,40 @@
+<!doctype html><html lang="ur" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Malik Products</title>
+<style>body{font-family:Arial;margin:0;background:#f4f5f7;color:#111}header{background:#111;color:#fff;padding:16px}main{max-width:900px;margin:auto;padding:16px}.card,.panel,.hero{background:#fff;border-radius:14px;padding:16px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card img{width:100%;height:180px;object-fit:cover}.btn,button{padding:11px 14px;border:0;border-radius:9px;background:#222;color:white;cursor:pointer;margin:4px}input{width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box;border:1px solid #ccc;border-radius:8px}.green{background:#12833b}.red{background:#b42318}.hide{display:none}</style></head>
+<body><header><b>Malik Products</b><br><button onclick="page('home')">Home</button><button onclick="page('products')">Products</button><button onclick="page('admin')">Admin</button></header>
+<main><section id="home">
+<div class="hero" style="text-align:center;padding:30px 18px;background:linear-gradient(135deg,#111,#2b2b2b);color:#fff;">
+<div style="font-size:18px;color:#ffd76a;font-weight:bold;">👑 MALIK PRODUCTS</div>
+<h1 style="font-size:34px;margin:8px 0;">آپ کی پسند، ہماری پہچان</h1>
+<p style="font-size:18px;line-height:1.8;">معیاری مصنوعات، بہترین انتخاب اور آسان خریداری — سب ایک جگہ۔</p>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px;">
+<span style="background:#12833b;padding:10px 15px;border-radius:20px;">🚚 Free Delivery</span>
+<span style="background:#333;padding:10px 15px;border-radius:20px;">⭐ Quality Products</span>
+<span style="background:#333;padding:10px 15px;border-radius:20px;">📱 Easy WhatsApp Order</span>
+</div>
+<button class="green" onclick="page('products')" style="font-size:16px;padding:13px 22px;margin-top:20px;">🛍️ ابھی پروڈکٹس دیکھیں</button>
+<p style="font-size:13px;opacity:.8;">* Free Delivery کی دستیابی علاقے اور آرڈر کی شرائط کے مطابق ہو سکتی ہے۔</p>
+</div>
+<div class="grid">
+<div class="card" style="text-align:center;"><div style="font-size:30px;">🚚</div><h3>Free Delivery</h3><p>منتخب علاقوں میں آسان اور مفت ڈیلیوری۔</p></div>
+<div class="card" style="text-align:center;"><div style="font-size:30px;">⭐</div><h3>بہترین انتخاب</h3><p>اپنی ضرورت کے مطابق پروڈکٹ منتخب کریں۔</p></div>
+<div class="card" style="text-align:center;"><div style="font-size:30px;">📲</div><h3>آسان آرڈر</h3><p>WhatsApp کے ذریعے آسانی سے آرڈر کریں۔</p></div>
+</div>
+</section>
+<section id="products" class="hide"><h2>Products</h2><div id="list" class="grid"></div></section>
+<section id="admin" class="hide"><div id="login" class="panel"><h2>Admin Panel</h2><input id="pw" type="password" placeholder="Admin password"><button class="green" onclick="login()">Open Admin</button><p>یہ browser-based demo ہے؛ حقیقی multi-device security کے لیے backend authentication ضروری ہے۔</p></div>
+<div id="edit" class="hide"><div class="panel"><button class="green" onclick="add()">+ Add Product</button><button onclick="save()">Save</button><button class="red" onclick="location.reload()">Logout</button></div><div id="forms"></div><div class="panel"><b>WhatsApp نمبر</b><input id="wa" placeholder="923001234567"><button onclick="saveWA()">Save WhatsApp</button></div></div></section></main>
+<script>
+const PASS="Malik@2026";let products=JSON.parse(localStorage.getItem("mp")||"null")||[{name:"Sample Product",price:"1000",image:""}];let wa=localStorage.getItem("wa")||"923001234567";
+function page(x){["home","products","admin"].forEach(id=>document.getElementById(id).classList.toggle("hide",id!=x));if(x=="products")render();if(x=="admin")renderEdit()}
+function login(){if(document.getElementById("pw").value===PASS){sessionStorage.ok="1";renderEdit()}else alert("Password غلط ہے۔")}
+function render(){list.innerHTML=products.map(p=>`<div class="card">${p.image?`<img src="${p.image}">`:""}<h3>${safe(p.name)}</h3><b>Rs ${safe(p.price)}</b><br><a class="btn green" target="_blank" href="https://wa.me/${wa}?text=${encodeURIComponent("I want to order: "+p.name+" - Rs "+p.price)}">WhatsApp Order</a></div>`).join("")}
+function renderEdit(){if(sessionStorage.ok!="1")return;loginDiv();forms.innerHTML=products.map((p,i)=>`<div class="panel"><h3>Product ${i+1}</h3><label>Name</label><input id="n${i}" value="${safe(p.name)}"><label>Price</label><input id="p${i}" value="${safe(p.price)}"><label>Image</label><input type="file" accept="image/*" onchange="img(event,${i})">${p.image?`<img src="${p.image}" style="max-width:180px;display:block">`:""}<button class="red" onclick="del(${i})">Delete</button></div>`).join("");document.getElementById("wa").value=wa}
+function loginDiv(){document.getElementById("login").classList.add("hide");document.getElementById("edit").classList.remove("hide")}
+function img(e,i){let r=new FileReader();r.onload=()=>{products[i].image=r.result;renderEdit()};r.readAsDataURL(e.target.files[0])}
+function add(){products.push({name:"New Product",price:"0",image:""});renderEdit()}
+function del(i){products.splice(i,1);renderEdit()}
+function save(){products.forEach((p,i)=>{p.name=document.getElementById("n"+i).value;p.price=document.getElementById("p"+i).value});localStorage.setItem("mp",JSON.stringify(products));alert("Products saved");render()}
+function saveWA(){wa=document.getElementById("wa").value.replace(/\D/g,"");localStorage.setItem("wa",wa);alert("WhatsApp saved")}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+page("home");
+</script></body></html>
